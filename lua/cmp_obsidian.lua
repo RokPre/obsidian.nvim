@@ -227,7 +227,7 @@ source.complete = function(_, request, callback)
         ---@type string[]
         local aliases
         if not in_buffer_only then
-          aliases = util.tbl_unique { tostring(note.id), note:display_name(), unpack(note.aliases) }
+          aliases = util.tbl_unique { tostring(note.id), note:display_name(), unpack(note.aliases), note.filename }
           if note.title ~= nil then
             table.insert(aliases, note.title)
           end
