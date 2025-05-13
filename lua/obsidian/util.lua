@@ -1037,7 +1037,6 @@ util.wiki_link_id_prefix = function(opts)
     header = "#" .. opts.block.id
   end
 
-  vim.print(opts.linkContent)
   if opts.linkContent == "filename" or opts.id == nil then
     base = filepath
   else
