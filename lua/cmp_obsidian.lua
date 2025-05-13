@@ -152,7 +152,13 @@ source.complete = function(_, request, callback)
           if option.label then
             new_text = client:format_link(
               note,
-              { label = option.label, link_style = link_style, anchor = option.anchor, block = option.block }
+              {
+                label = option.label,
+                link_style = link_style,
+                anchor = option.anchor,
+                block = option.block,
+                linkContent = client.opts.preferred_link_content
+              }
             )
 
             final_label = assert(option.alt_label or option.label)
@@ -215,7 +221,7 @@ source.complete = function(_, request, callback)
             new_text_to_option[new_text].sort_text = new_text_to_option[new_text].sort_text .. " " .. sort_text
           else
             new_text_to_option[new_text] =
-              { label = final_label, new_text = new_text, sort_text = sort_text, documentation = documentation }
+            { label = final_label, new_text = new_text, sort_text = sort_text, documentation = documentation }
           end
         end
       end
@@ -240,10 +246,7 @@ source.complete = function(_, request, callback)
           update_completion_options(alias)
           local alias_case_matched = util.match_case(search, alias)
 
-          if
-            alias_case_matched ~= nil
-            and alias_case_matched ~= alias
-            and not util.tbl_contains(note.aliases, alias_case_matched)
+          if alias_case_matched ~= nil and alias_case_matched ~= alias and not util.tbl_contains(note.aliases, alias_case_matched)
           then
             update_completion_options(alias_case_matched)
           end
