@@ -60,6 +60,7 @@ source.complete = function(_, request, callback)
 
   ---@param results obsidian.Note[]
   local function search_callback(results)
+    vim.print(vim.inspect(results))
     -- Completion items.
     local items = {}
 
@@ -150,10 +151,17 @@ source.complete = function(_, request, callback)
           ---@type string, string, string, table|?
           local final_label, sort_text, new_text, documentation
           if option.label then
+            -- new_text = client:format_link(
+            --   note,
+            --   { label = option.label, link_style = link_style, anchor = option.anchor, block = option.block }
+            -- )
+            vim.print("----------")
+            vim.print(vim.inspect(option))
             new_text = client:format_link(
               note,
               { label = option.label, link_style = link_style, anchor = option.anchor, block = option.block }
-            )
+            )-- new_text is used by cmp to replace the text, should be link in the form of [[filename]]
+            -- vim.print("new_text: " .. new_text)
 
             final_label = assert(option.alt_label or option.label)
             if option.anchor then
@@ -211,6 +219,7 @@ source.complete = function(_, request, callback)
             error "should not happen"
           end
 
+          -- new_text_to_option is a list of options that cmp will show to the user. The text that gets inserted is new_text.
           if new_text_to_option[new_text] then
             new_text_to_option[new_text].sort_text = new_text_to_option[new_text].sort_text .. " " .. sort_text
           else
@@ -230,6 +239,9 @@ source.complete = function(_, request, callback)
           aliases = util.tbl_unique { tostring(note.id), note:display_name(), unpack(note.aliases) }
           if note.title ~= nil then
             table.insert(aliases, note.title)
+          end
+          if note.path.filename then
+            table.insert(aliases, note.path.filename:match("([^/]+)%.%w+$"))
           end
         end
 
@@ -270,7 +282,7 @@ source.complete = function(_, request, callback)
         label = label,
         kind = 18, -- "Reference"
         textEdit = {
-          newText = option.new_text,
+          newText = option.new_text, -- This line tells cmp what to replace the current text with.
           range = {
             start = {
               line = request.context.cursor.row - 1,
